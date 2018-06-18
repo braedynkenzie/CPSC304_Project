@@ -77,10 +77,16 @@
     <Compile Include="ProjectMembersWindow.xaml.cs">
       <DependentUpon>ProjectMembersWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SelectUserWindow.xaml.cs">
+      <DependentUpon>SelectUserWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Task.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UserInformationWindow.xaml.cs">
       <DependentUpon>UserInformationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewTaskWindow.xaml.cs">
+      <DependentUpon>ViewTaskWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="AddUserToProjectWindow.xaml">
       <SubType>Designer</SubType>
@@ -122,7 +128,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SelectUserWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserInformationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewTaskWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

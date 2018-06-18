@@ -8,7 +8,7 @@
         Title="MainWindow2" Height="500" Width="800" WindowStyle="None">
     <Canvas >
         <Label Name="DragLabel" Height="50" Width="794" MouseDown="DragRectangle_MouseDown"/>
-        <ComboBox Name="ProjectListComboBox" Height="32" FontSize="16" SelectedIndex="-1" Canvas.Left="16" Canvas.Top="10" Width="102" SelectionChanged="ProjectListComboBox_SelectionChanged">
+        <ComboBox Name="ActiveUsersProjectsComboBox" Height="32" FontSize="16" SelectedIndex="-1" Canvas.Left="16" Canvas.Top="10" Width="102" SelectionChanged="ProjectListComboBox_SelectionChanged">
             <ComboBoxItem Name="AddNewProjectComboBoxItem" Content="         +" FontWeight="Bold"/>
         </ComboBox>
         <Button Name="ShowProjectMembersButton" Content="Members" Canvas.Left="123" Canvas.Top="10" Height="32" Width="64" Click="ShowProjectMembersButton_Click"/>

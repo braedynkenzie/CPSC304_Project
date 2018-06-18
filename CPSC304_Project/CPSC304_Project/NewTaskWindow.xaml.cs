@@ -31,14 +31,32 @@ namespace CPSC304_Project
             this.listId = listId;
             this.projectId = projectId;
             InitializeComponent ();
+            List<User> allUsers = DatabaseHandler.getInstance ().getAllUsers ();
+            foreach ( User user in allUsers )
+            {
+                ComboBoxItem userComboBoxItem = new ComboBoxItem ()
+                {
+                    Content = user.username,
+                    Tag = user,
+                };
+                AssignedToComboBox.Items.Add ( userComboBoxItem );
+            }
         }
 
         private void CreateButton_Click( object sender, RoutedEventArgs e )
         {
+            if ( AssignedToComboBox.SelectedIndex == -1 )
+            {
+                MessageBox.Show ( "You must select an assigned user.", "Error" );
+                return;
+            }
+
             string taskName = TaskNameTextBox.Text;
             string taskDescription = TaskDescriptionTextBox.Text;
             int taskId = DatabaseHandler.generateNextTaskId ();
-            Task newTask = new Task ( taskId, taskName, taskDescription, listId, projectId );
+            DateTime taskDueDate = TaskDueDatePicker.SelectedDate ?? DateTime.Now;
+            User assignedToUser = ( AssignedToComboBox.SelectedItem as ComboBoxItem ).Tag as User;
+            Task newTask = new Task ( taskId, taskName, taskDescription, listId, projectId, taskDueDate, assignedToUser.id );
             callerWindow.AddNewTaskToList ( newTask, parentStackPanel );
             DatabaseHandler.getInstance ().addNewTask ( newTask );
 

@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\App.xaml
-9-1350259709
+11-726924782
 
-22-862161111
+2422752229
 141813795073
-AddUserToProjectWindow.xaml;MainWindow.xaml;MainWindow2.xaml;NewListWindow.xaml;NewProjectWindow.xaml;NewTaskWindow.xaml;NewUserWindow.xaml;ProjectMembersWindow.xaml;UserInformationWindow.xaml;
+AddUserToProjectWindow.xaml;MainWindow.xaml;MainWindow2.xaml;NewListWindow.xaml;NewProjectWindow.xaml;NewTaskWindow.xaml;NewUserWindow.xaml;ProjectMembersWindow.xaml;SelectUserWindow.xaml;UserInformationWindow.xaml;ViewTaskWindow.xaml;
 
-False
+True
 

@@ -90,6 +90,22 @@ namespace CPSC304_Project
             
         }
 
+        public void assignUserToTask( User selectedUser, Task selectedTask )
+        {
+            // Changes the assigned user of selectedTask to be selectedUser
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "UPDATE Tasks " +
+                    "SET assignedTo = {0} " +
+                    "WHERE id = {1}; ",
+                    selectedUser.id, selectedTask.Id );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
+        }
+
         public static int generateNextProjectId()
         {
             int newProjectId = 0;
@@ -250,7 +266,7 @@ namespace CPSC304_Project
             MySqlCommand cmd = mySqlConnection.CreateCommand ();
             cmd.CommandText =
                 String.Format (
-                "SELECT id, listId, projectId, taskName, taskDescription " +
+                "SELECT id, listId, projectId, taskName, taskDescription, taskDueDate, assignedTo " +
                 "FROM Tasks " +
                 "WHERE listId = {0} ",
                 projectList.Id );
@@ -263,7 +279,9 @@ namespace CPSC304_Project
                 int projectId = reader.GetInt32 ( 2 );
                 string taskName = reader.GetString ( 3 );
                 string taskDescription = reader.GetString ( 4 );
-                Task task = new Task ( taskId, taskName, taskDescription, listId, projectId );
+                DateTime taskDueDate = reader.GetDateTime ( 5 );
+                int assignedToUserId = reader.GetInt32 ( 6 );
+                Task task = new Task ( taskId, taskName, taskDescription, listId, projectId, taskDueDate, assignedToUserId );
                 tasks.Add ( task );
             }
             mySqlConnection.Close ();
@@ -297,6 +315,41 @@ namespace CPSC304_Project
                 users.Add ( user );
             }
             return users;
+        }
+
+        public Task getTaskFromId( int id )
+        {
+            Task task = null;
+            try
+            {
+                mySqlConnection.Open ();
+            }
+            catch ( Exception e )
+            {
+                // was already open
+            }
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, projectId, taskName, taskDescription, taskDueDate, assignedTo, listId " +
+                "FROM Tasks " +
+                "WHERE id = {0} ",
+                id );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> userIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                int taskId = reader.GetInt32 ( 0 );
+                int projectId = reader.GetInt32 ( 1 );
+                string taskName = reader.GetString ( 2 );
+                string description = reader.GetString ( 3 );
+                DateTime taskDueDate = reader.GetDateTime ( 4 );
+                int assignedToUserId = reader.GetInt32 ( 5 );
+                int listId = reader.GetInt32 ( 6 );
+                task = new Task ( taskId, taskName, description, listId, projectId, taskDueDate, assignedToUserId );
+            }
+            mySqlConnection.Close ();
+            return task;
         }
 
         public User getUserFromId( int userId )
@@ -375,7 +428,7 @@ namespace CPSC304_Project
             MySqlCommand cmd = mySqlConnection.CreateCommand ();
             cmd.CommandText =
                 String.Format (
-                "SELECT id, projectId, taskName, taskDescription " +
+                "SELECT id, projectId, taskName, taskDescription, taskDueDate, assignedTo " +
                 "FROM Tasks " +
                 "WHERE listId = {0} ",
                 listId );
@@ -387,7 +440,9 @@ namespace CPSC304_Project
                 int projectId = reader.GetInt32 ( 1 );
                 string taskName = reader.GetString ( 2 );
                 string description = reader.GetString ( 3 );
-                Task task = new Task ( taskId, taskName, description, listId, projectId );
+                DateTime taskDueDate = reader.GetDateTime ( 4 );
+                int assignedToUserId = reader.GetInt32 ( 5 );
+                Task task = new Task ( taskId, taskName, description, listId, projectId, taskDueDate, assignedToUserId );
                 tasks.Add ( task );
             }
             mySqlConnection.Close ();
@@ -464,9 +519,12 @@ namespace CPSC304_Project
                     "listId INT, " +
                     "taskName CHAR(20), " +
                     "taskDescription CHAR(200)," +
+                    "taskDueDate DATETIME, " +
+                    "assignedTo INT, " +
                     "PRIMARY KEY (id, projectId, listId), " +
                     "FOREIGN KEY (projectId) REFERENCES Projects(id), " +
-                    "FOREIGN KEY (listId) REFERENCES Lists(id) " +
+                    "FOREIGN KEY (listId) REFERENCES Lists(id), " +
+                    "FOREIGN KEY (assignedTo) REFERENCES Users(id) " +
                     ");";
                 createTasksTableCmd.ExecuteNonQuery ();
 
@@ -585,11 +643,12 @@ namespace CPSC304_Project
         {
             mySqlConnection.Open ();
             MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            string sqlFormattedDateTime = task.GetDueDate ().ToString ( "yyyy-MM-dd HH:mm:ss.fff" );
             cmd.CommandText =
                 String.Format (
-                    "INSERT INTO Tasks(id,projectId,listId,taskName,taskDescription) " +
-                    "VALUES ({0},{1},{2},'{3}','{4}');",
-                    task.Id, task.ProjectId, task.ListId, task.GetName (), task.GetDescription () );
+                    "INSERT INTO Tasks(id,projectId,listId,taskName,taskDescription,taskDueDate,assignedTo) " +
+                    "VALUES ({0},{1},{2},'{3}','{4}','{5}',{6});",
+                    task.Id, task.ProjectId, task.ListId, task.GetName (), task.GetDescription (), sqlFormattedDateTime, task.AssignedToUserId );
             cmd.ExecuteNonQuery ();
 
             mySqlConnection.Close ();
@@ -599,46 +658,17 @@ namespace CPSC304_Project
 
 
 
-        public void testDb()
+        public void closeConnection()
         {
-            mySqlConnection.Open ();
-            
-            string createNewDb =
-                "CREATE DATABASE IF NOT EXISTS `HelloWorld`;";
-
-            MySqlCommand cmd1 = mySqlConnection.CreateCommand ();
-            cmd1.CommandText = createNewDb;
-            cmd1.ExecuteNonQuery ();
-
-            string db = mySqlConnection.Database;
-
-            MySqlCommand cmd2 = mySqlConnection.CreateCommand ();
-            cmd2.CommandText =
-                "CREATE TABLE IF NOT EXISTS Users (" +
-                "id INT PRIMARY KEY," +
-                "username CHAR(20)," +
-                "password CHAR(20)" +
-                ");";
-            cmd2.ExecuteNonQuery ();
-
-            MySqlCommand cmd3 = mySqlConnection.CreateCommand ();
-            cmd3.CommandText =
-                "INSERT INTO Users(id,username,password) " +
-                "VALUES (42,'Braedyn','password123');";
-            //cmd3.ExecuteNonQuery ();
-
-            MySqlCommand cmd4 = mySqlConnection.CreateCommand ();
-            cmd4.CommandText =
-                "SELECT id, username " +
-                "FROM Users ";
-            MySqlDataReader reader = cmd4.ExecuteReader ();
-            while ( reader.Read () )
+            try
             {
-                string idNum = reader.GetString(0);
-                Console.WriteLine ( idNum );
+                mySqlConnection.Close ();
             }
-
-            mySqlConnection.Close ();
+            catch(Exception e )
+            {
+                // do nothing
+            }
+            
         }
     }
 }

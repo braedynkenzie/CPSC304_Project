@@ -35,7 +35,6 @@ namespace CPSC304_Project
                     FontSize = 16,
                     FontWeight = FontWeights.Bold,
                 };
-                MainStackPanel.Children.Add ( projectLabel );
                 Button addUserToProjectButton = new Button ()
                 {
                     Content = "Add User",
@@ -44,18 +43,27 @@ namespace CPSC304_Project
                     Tag = project,
                 };
                 addUserToProjectButton.Click += AddUserToProjectButton_Click;
-                
+
+                MainStackPanel.Children.Add ( projectLabel );
+                MainStackPanel.Children.Add ( addUserToProjectButton );
+                MainStackPanel.Children.Add ( new Separator() );
+
+
             }
         }
 
         private void AddUserToProjectButton_Click( object sender, RoutedEventArgs e )
         {
-            throw new NotImplementedException ();
+            Project selectedProject = ( sender as Button ).Tag as Project;
+            SelectUserWindow selectUserWindow = new SelectUserWindow ( this, selectedProject );
+            this.IsEnabled = false;
+            selectUserWindow.Show ();
         }
 
         private void CloseButton_Click( object sender, RoutedEventArgs e )
         {
             callerWindow.IsEnabled = true;
+            (callerWindow as MainWindow2).ReloadProjectsComboBox ();
             this.Close ();
         }
     }

@@ -13,16 +13,18 @@ namespace CPSC304_Project
         private string taskDescription;
         private int listId;
         private int projectId;
-        
-        private List<int> assignedUsers = new List<int> ();
+        private DateTime dueDate;
+        private int assignedToUserId;
 
-        public Task( int id, string name, string description, int listId, int projectId )
+        public Task( int id, string name, string description, int listId, int projectId, DateTime dueDate, int assignedTo )
         {
             this.id = id;
             taskName = name;
             taskDescription = description;
             this.listId = listId;
             this.projectId = projectId;
+            this.dueDate = dueDate;
+            assignedToUserId = assignedTo;
         }
 
         public int ListId
@@ -40,15 +42,25 @@ namespace CPSC304_Project
             get => id;
             set => id = value;
         }
+        public int AssignedToUserId
+        {
+            get => assignedToUserId;
+            set => assignedToUserId = value;
+        }
 
         public string GetName()
         {
             return taskName;
         }
 
-        internal object GetDescription()
+        public string GetDescription()
         {
             return taskDescription;
+        }
+
+        internal DateTime GetDueDate()
+        {
+            return dueDate;
         }
     }
 }
