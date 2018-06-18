@@ -24,15 +24,16 @@ namespace CPSC304_Project
 
         public UserInformationWindow( User user, Window caller )
         {
+            InitializeComponent ();
             activeUser = user;
             callerWindow = caller;
-            InitializeComponent ();
             UsernameTextBlock.Text = activeUser.username;
             GenerateUserTasksUI ();
         }
 
         private void GenerateUserTasksUI()
         {
+            MainStackPanel.Children.Clear ();
             // Get all tasks assigned to the active user and display them
             List<Task> usersTasks = DatabaseHandler.getInstance ().getAllTasksForUser ( activeUser );
             foreach ( Task task in usersTasks )
@@ -81,6 +82,55 @@ namespace CPSC304_Project
         {
             callerWindow.IsEnabled = true;
             this.Close ();
+        }
+
+        private void TaskDateRangeComboBox_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            if ( TaskDateRangeComboBox.SelectedIndex == 0 )
+            {
+                if ( DaysTextLabel != null )
+                {
+                    DaysTextLabel.Visibility = Visibility.Hidden;
+                    GenerateUserTasksUI ();
+                }
+                return;
+            }
+            else
+            {
+                DaysTextLabel.Visibility = Visibility.Visible;
+                int dateRange = Convert.ToInt32 ( ( TaskDateRangeComboBox.SelectedItem as ComboBoxItem ).Content as string );
+                GenerateUserTasksUIWithinDateRange ( dateRange );
+            }
+
+        }
+
+        private void GenerateUserTasksUIWithinDateRange( int dateRange )
+        {
+            MainStackPanel.Children.Clear ();
+            // Get all tasks withing dateRange assigned to the active user and display them
+            List<Task> usersTasks = DatabaseHandler.getInstance ().getAllTasksForUser ( activeUser );
+            foreach ( Task task in usersTasks )
+            {
+                if ( ( task.GetDueDate () - DateTime.Now ) > new TimeSpan ( dateRange, 0, 0, 0 ) ) 
+                {
+                    continue;
+                }
+
+                Label taskNameLabel = new Label ()
+                {
+                    Content = task.GetName (),
+                    FontSize = 16,
+                    FontWeight = FontWeights.Bold,
+                    Tag = task,
+                };
+
+                MainStackPanel.Children.Add ( taskNameLabel );
+                MainStackPanel.Children.Add ( new Separator () );
+
+                taskNameLabel.MouseEnter += TaskNameLabel_MouseEnter;
+                taskNameLabel.MouseLeave += TaskNameLabel_MouseLeave;
+                taskNameLabel.MouseLeftButtonUp += TaskNameLabel_MouseLeftButtonUp;
+            }
         }
     }
 }

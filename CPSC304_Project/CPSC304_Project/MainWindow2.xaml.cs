@@ -167,6 +167,18 @@ namespace CPSC304_Project
             newStackPanel.Margin = new Thickness ( 0, 10, 0, 10 );
             newStackPanel.Background = new SolidColorBrush ( Colors.LightGray );
 
+            Button deleteListButton = new Button ()
+            {
+                Content = "-",
+                FontSize = 16,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Tag = newProjectList,
+                Height = 12,
+                Margin = new Thickness(0,6,6,0),
+            };
+            deleteListButton.Click += DeleteListButton_Click;
+            newStackPanel.Children.Add ( deleteListButton );
+
             Label listHeaderLabel = new Label ();
             listHeaderLabel.Content = listName;
             newStackPanel.Children.Add ( listHeaderLabel );
@@ -228,6 +240,15 @@ namespace CPSC304_Project
 
             MainStackPanel.Children.Remove ( addNewButton );
             MainStackPanel.Children.Add ( addNewButton );
+        }
+
+        private void DeleteListButton_Click( object sender, RoutedEventArgs e )
+        {
+            ProjectList list = ( sender as Button ).Tag as ProjectList;
+            DatabaseHandler.getInstance ().removeList ( list );
+            projects = DatabaseHandler.getInstance ().getUsersProjects ( activeUser.id );
+            activeProject = DatabaseHandler.getInstance ().getProjectFromId ( activeProject.getProjectId () );
+            RefreshProjectUI ( activeProject.getProjectId () );
         }
 
         private void AddTaskButton_Click( object sender, RoutedEventArgs e )

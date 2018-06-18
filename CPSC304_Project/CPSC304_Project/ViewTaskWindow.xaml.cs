@@ -33,6 +33,7 @@ namespace CPSC304_Project
             TaskNameLabel.Content = activeTask.GetName ();
             TaskDescriptionTextBox.Text = activeTask.GetDescription () as string;
             AssignedToLabel.Content = DatabaseHandler.getInstance ().getUserFromId ( activeTask.AssignedToUserId ).username;
+            DueDateLabel.Content = task.GetDueDate ().ToString ( "yyyy-MM-dd" );
         }
 
         private void CloseButton_Click( object sender, RoutedEventArgs e )

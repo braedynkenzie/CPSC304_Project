@@ -118,6 +118,20 @@ namespace CPSC304_Project
             mySqlConnection.Close ();
         }
 
+        internal void removeList( ProjectList list )
+        {
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "DELETE FROM Lists " +
+                    "WHERE id = {0};",
+                    list.Id );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
+        }
+
         public void addNewProject( Project newProject )
         {
             // Inserts the new project into the database

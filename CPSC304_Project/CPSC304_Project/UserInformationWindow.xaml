@@ -10,10 +10,25 @@
         <Label Content="User Information" FontWeight="Bold" FontSize="16"/>
         <Label Content="Username:" FontSize="16" Canvas.Top="32"/>
         <TextBlock Name="UsernameTextBlock" Width="194" Canvas.Left="90" Canvas.Top="37" Height="27" FontSize="16" />
-        <Label Content="Task List:" FontSize="16" Canvas.Top="69"/>
+        <Label Content="Show within:" FontSize="16" Canvas.Top="64"/>
+        <ComboBox Name="TaskDateRangeComboBox" SelectedIndex="0" Canvas.Left="104" Canvas.Top="68" Width="87" Height="27" SelectionChanged="TaskDateRangeComboBox_SelectionChanged">
+            <ComboBoxItem Content="All time"/>
+            <ComboBoxItem Content="1"/>
+            <ComboBoxItem Content="2"/>
+            <ComboBoxItem Content="3"/>
+            <ComboBoxItem Content="4"/>
+            <ComboBoxItem Content="5"/>
+            <ComboBoxItem Content="6"/>
+            <ComboBoxItem Content="7"/>
+            <ComboBoxItem Content="8"/>
+            <ComboBoxItem Content="9"/>
+            <ComboBoxItem Content="10"/>
+        </ComboBox>
         <Button Name="CloseButton" Content="X" Height="22" Width="22" Canvas.Left="250" Canvas.Top="10" Click="CloseButton_Click"/>
-        <ScrollViewer Canvas.Left="75" Canvas.Top="69" Height="215" Width="209">
+        <ScrollViewer Canvas.Left="75" Canvas.Top="96" Height="188" Width="209">
             <StackPanel Name="MainStackPanel"/>
         </ScrollViewer>
+        <Label Content="Task List:" FontSize="16" Canvas.Top="96"/>
+        <Label Name="DaysTextLabel" Content="days" FontSize="16" Canvas.Top="64" Canvas.Left="193" Visibility="Hidden"/>
     </Canvas>
 </Window>
