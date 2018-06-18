@@ -59,13 +59,367 @@ namespace CPSC304_Project
             return dbHandlerInstance;
         }
 
-        internal string getUsername( int userId )
+        public void addUserToProject( User user, Project project )
         {
-            // Return the username corresponding to the given userId
-            throw new NotImplementedException ();
+            // Makes the connection between user and project by adding to the WorksOn database table
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "INSERT INTO WorksOn(userId,projectId)" +
+                    "VALUES ({0},{1});",
+                    user.getUserId (), project.getProjectId () );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
         }
 
-        internal static void initDatabase()
+        public void addNewProject( Project newProject )
+        {
+            // Inserts the new project into the database
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "INSERT INTO Projects(id,title) " +
+                    "VALUES ({0},'{1}');",
+                    newProject.getProjectId (), newProject.getName() );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
+            
+        }
+
+        public static int generateNextProjectId()
+        {
+            int newProjectId = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                "SELECT id " +
+                "FROM Projects ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                int currentProjectId = reader.GetInt32 ( 0 );
+                if ( newProjectId <= currentProjectId )
+                {
+                    newProjectId = currentProjectId + 1;
+                }
+            }
+            mySqlConnection.Close ();
+            return newProjectId;
+        }
+
+        public static int generateNextProjectListId()
+        {
+            int newProjectListId = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                "SELECT id " +
+                "FROM Lists ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                int currentProjectListId = reader.GetInt32 ( 0 );
+                if ( newProjectListId <= currentProjectListId )
+                {
+                    newProjectListId = currentProjectListId + 1;
+                }
+            }
+            mySqlConnection.Close ();
+            return newProjectListId;
+        }
+
+        public static int generateNextTaskId()
+        {
+            int newTaskId = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                "SELECT id " +
+                "FROM Tasks ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                int currentTaskId = reader.GetInt32 ( 0 );
+                if ( newTaskId <= currentTaskId )
+                {
+                    newTaskId = currentTaskId + 1;
+                }
+            }
+            mySqlConnection.Close ();
+            return newTaskId;
+        }
+
+        public List<Project> getUsersProjects( int userId )
+        {
+            // Return a list of all projects the current user works on
+            List<Project> usersProjects = new List<Project> ();
+
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT userId, projectId " +
+                "FROM WorksOn " +
+                "WHERE userId = {0} ",
+                userId );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> projectIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                // Adds all projectIds for the given userId
+                projectIds.Add ( reader.GetInt32 ( 1 ) );
+            }
+            mySqlConnection.Close ();
+            foreach ( int projectId in projectIds )
+            {
+                usersProjects.Add ( getProjectFromId ( projectId ) );
+            }
+            return usersProjects;
+
+        }
+
+        public Project getProjectFromId( int projectId )
+        {
+            // Creates and returns a Project object for the given projectId
+            string title = null;
+
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT title " +
+                "FROM Projects " +
+                "WHERE id = {0} ",
+                projectId );
+            using ( MySqlDataReader reader = cmd.ExecuteReader () )
+            {
+                while ( reader.Read () )
+                {
+                    // Get the project title
+                    title = reader.GetString ( 0 );
+                }
+            }
+            mySqlConnection.Close ();
+
+            List<ProjectList> projectLists = getListsOnProject ( projectId );
+            List<User> users = getUsersOnProject ( projectId );
+
+            Project project = new Project ( title, projectLists, users, projectId );
+            return project;
+        }
+
+        public List<ProjectList> getListsOnProject( int projectId )
+        {
+            List<ProjectList> projectLists = new List<ProjectList> ();
+            List<int> projectListIds = new List<int> ();
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id " +
+                "FROM Lists " +
+                "WHERE projectId = {0} ",
+                projectId );
+            using ( MySqlDataReader reader = cmd.ExecuteReader () )
+            {
+                while ( reader.Read () )
+                {
+                    // add all project lists
+                    int listId = reader.GetInt32 ( 0 );
+                    projectListIds.Add ( listId );
+                }
+            }
+            mySqlConnection.Close ();
+            foreach ( int projectListId in projectListIds )
+            {
+                ProjectList projectList = getListFromId ( projectListId );
+                projectLists.Add ( projectList );
+            }
+            return projectLists;
+        }
+
+        public List<Task> getTasksOnList( ProjectList projectList )
+        {
+            List<Task> tasks = new List<Task> ();
+
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, listId, projectId, taskName, taskDescription " +
+                "FROM Tasks " +
+                "WHERE listId = {0} ",
+                projectList.Id );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> userIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                int taskId = reader.GetInt32 ( 0 );
+                int listId = reader.GetInt32 ( 1 );
+                int projectId = reader.GetInt32 ( 2 );
+                string taskName = reader.GetString ( 3 );
+                string taskDescription = reader.GetString ( 4 );
+                Task task = new Task ( taskId, taskName, taskDescription, listId, projectId );
+                tasks.Add ( task );
+            }
+            mySqlConnection.Close ();
+            return tasks;
+            
+        }
+
+        public List<User> getUsersOnProject( int projectId )
+        {
+            // Return a list of all users working on Project with given projectId 
+            List<User> users = new List<User> ();
+
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT userId, projectId " +
+                "FROM WorksOn " +
+                "WHERE projectId = {0} ",
+                projectId );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> userIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                userIds.Add ( reader.GetInt32 ( 0 ) );
+            }
+            mySqlConnection.Close ();
+            foreach ( int userId in userIds )
+            {
+                User user = getUserFromId ( userId );
+                users.Add ( user );
+            }
+            return users;
+        }
+
+        public User getUserFromId( int userId )
+        {
+            User user = null;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, isManager, username, password " +
+                "FROM Users " +
+                "WHERE id = {0} ",
+                userId );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> userIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                int id          = reader.GetInt32 ( 0 );
+                int isManagerInt = reader.GetInt32 ( 1 );
+                string username = reader.GetString ( 2 );
+                string password = reader.GetString ( 3 );
+                user = new User ( username, password, id, ( isManagerInt == 1 ) );
+            }
+            mySqlConnection.Close ();
+            return user;
+        }
+
+        public ProjectList getListFromId( int listId )
+        {
+            ProjectList projectList = null;
+            List<Task> tasks = getTasksForListId ( listId );
+
+            try
+            {
+                mySqlConnection.Open ();
+            }
+            catch ( Exception e )
+            {
+                // was already open
+            }
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, title, priority, projectId " +
+                "FROM Lists " +
+                "WHERE id = {0} ",
+                listId );
+            using ( MySqlDataReader reader = cmd.ExecuteReader () )
+            {
+                List<int> userIds = new List<int> ();
+                while ( reader.Read () )
+                {
+                    int id = reader.GetInt32 ( 0 );
+                    string listName = reader.GetString ( 1 );
+                    string priority = reader.GetString ( 2 );
+                    int projectId = reader.GetInt32 ( 3 );
+                    projectList = new ProjectList ( id, projectId, listName, priority, tasks );
+                }
+            }
+            mySqlConnection.Close ();
+            return projectList;
+        }
+
+        public List<Task> getTasksForListId( int listId )
+        {
+            List<Task> tasks = new List<Task> ();
+
+            try
+            {
+                mySqlConnection.Open ();
+            }
+            catch ( Exception e )
+            {
+                // was already open
+            }
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, projectId, taskName, taskDescription " +
+                "FROM Tasks " +
+                "WHERE listId = {0} ",
+                listId );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            List<int> userIds = new List<int> ();
+            while ( reader.Read () )
+            {
+                int taskId = reader.GetInt32 ( 0 );
+                int projectId = reader.GetInt32 ( 1 );
+                string taskName = reader.GetString ( 2 );
+                string description = reader.GetString ( 3 );
+                Task task = new Task ( taskId, taskName, description, listId, projectId );
+                tasks.Add ( task );
+            }
+            mySqlConnection.Close ();
+            return tasks;
+        }
+
+        public string getUsername( int userId )
+        {
+            // Return the username corresponding to the given userId
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT username " +
+                "FROM Users " +
+                "WHERE id = '{0}' ",
+                userId.ToString () );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            string username = null;
+            while ( reader.Read() )
+            {
+                username = reader.GetString ( 0 );
+            }
+            if ( username == null )
+            {
+                throw new Exception ( "ERROR: UserId not found in the database." );
+            }
+            mySqlConnection.Close ();
+            return username;
+        }
+
+        public static void initDatabase()
         {
             // If database has not already been initialized, create a new database with the appropriate tables
             if ( !initialized )
@@ -96,7 +450,8 @@ namespace CPSC304_Project
                     "id INT, " +
                     "projectId INT, " +
                     "title CHAR(20), " +
-                    "PRIMARY KEY(id, projectId), " +
+                    "priority CHAR(20), " +
+                    "PRIMARY KEY (id, projectId), " +
                     "FOREIGN KEY (projectId) REFERENCES Projects(id) " +
                     ");";
                 createListsTableCmd.ExecuteNonQuery ();
@@ -139,7 +494,7 @@ namespace CPSC304_Project
 
         public List<User> getAllUsers()
         {
-            // Return a list of all users, including usernames and passwords
+            // Return a list of all users
             mySqlConnection.Open ();
             List<User> allUsers = new List<User> ();
             MySqlCommand cmd = mySqlConnection.CreateCommand ();
@@ -160,7 +515,31 @@ namespace CPSC304_Project
             return allUsers;
         }
 
-        public void addNewUser( string userName, string password, bool isManager )
+        public List<Project> getAllProjects()
+        {
+            // Return a list of all projects
+            mySqlConnection.Open ();
+            List<Project> allProjects = new List<Project> ();
+            List<int> allProjectIds = new List<int> ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                "SELECT id " +
+                "FROM Projects ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                int projectId = reader.GetInt32 ( 0 );
+                allProjectIds.Add ( projectId );
+            }
+            mySqlConnection.Close ();
+            foreach ( int id in allProjectIds )
+            {
+                allProjects.Add ( getProjectFromId ( id ) );
+            }
+            return allProjects;
+        }
+
+        public User addNewUser( string userName, string password, bool isManager )
         {
             List<User> allUsers = getAllUsers ();
             int isManagerInt = isManager ? 1 : 0;
@@ -177,11 +556,42 @@ namespace CPSC304_Project
             MySqlCommand cmd = mySqlConnection.CreateCommand ();
             cmd.CommandText =
                 String.Format (
-                    "INSERT INTO Users(id,username,password,isManager)" +
+                    "INSERT INTO Users(id,username,password,isManager) " +
                     "VALUES ({0},'{1}','{2}','{3}');",
                     newUserId, userName, password, isManagerInt );
             cmd.ExecuteNonQuery ();
               
+            mySqlConnection.Close ();
+
+            User newUser = new User ( userName, password, newUserId, isManager );
+            return newUser;
+        }
+
+        public void addNewList( ProjectList newProjectList )
+        {
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "INSERT INTO Lists(id,projectId,title,priority) " +
+                    "VALUES ({0},'{1}','{2}','{3}');",
+                    newProjectList.Id, newProjectList.ProjectId, newProjectList.getName (), newProjectList.getListPriority () );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
+        }
+
+        public void addNewTask( Task task )
+        {
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "INSERT INTO Tasks(id,projectId,listId,taskName,taskDescription) " +
+                    "VALUES ({0},{1},{2},'{3}','{4}');",
+                    task.Id, task.ProjectId, task.ListId, task.GetName (), task.GetDescription () );
+            cmd.ExecuteNonQuery ();
+
             mySqlConnection.Close ();
         }
 

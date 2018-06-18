@@ -9,15 +9,12 @@
     <Canvas >
         <Label Name="DragLabel" Height="50" Width="794" MouseDown="DragRectangle_MouseDown"/>
         <ComboBox Name="ProjectListComboBox" Height="32" FontSize="16" SelectedIndex="-1" Canvas.Left="16" Canvas.Top="10" Width="102" SelectionChanged="ProjectListComboBox_SelectionChanged">
-            <ComboBoxItem Content="Project 1"/>
-            <ComboBoxItem Content="Project 2"/>
-            <ComboBoxItem Content="Project 3"/>
-            <ComboBoxItem Content="Project 4"/>
+            <ComboBoxItem Name="AddNewProjectComboBoxItem" Content="         +" FontWeight="Bold"/>
         </ComboBox>
         <Button Name="ShowProjectMembersButton" Content="Members" Canvas.Left="123" Canvas.Top="10" Height="32" Width="64" Click="ShowProjectMembersButton_Click"/>
         <Button x:Name="CloseButton" Content="X" Height="32" Canvas.Right="18" Canvas.Top="10" Width="32" Click="CloseButton_Click" />
         <Button x:Name="LogoutButton" Content="Logout" Canvas.Right="60" Canvas.Top="10" Height="32" Width="61" RenderTransformOrigin="0.538,0.505" Click="LogoutButton_Click" />
-        <Label Name="CurrentUserLabel" FontSize="16" Height="32" Canvas.Right="126" Canvas.Top="10" Content="Current User's Name"></Label>
+        <Label Name="CurrentUserLabel" FontSize="16" Height="32" Canvas.Right="126" Canvas.Top="10" Content="Current User's Name" PreviewMouseLeftButtonUp="CurrentUserLabel_PreviewMouseLeftButtonUp" MouseEnter="CurrentUserLabel_MouseEnter" MouseLeave="CurrentUserLabel_MouseLeave"/>
 
         <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" Canvas.Top="50" Height="436" Width="790">
             <StackPanel Name="MainStackPanel" Orientation="Horizontal" >
@@ -27,5 +24,6 @@
 
 
         </ScrollViewer>
+        <Button x:Name="ProjectsButton" Content="Projects" Canvas.Left="192" Canvas.Top="10" Height="32" Width="64" Click="ProjectsButton_Click" />
     </Canvas>
 </Window>

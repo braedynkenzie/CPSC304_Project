@@ -23,3 +23,11 @@ C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CP
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\bin\Debug\MySql.Data.dll
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\bin\Debug\Google.Protobuf.dll
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\bin\Debug\MySql.Data.xml
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\NewProjectWindow.g.cs
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\NewProjectWindow.baml
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\ProjectMembersWindow.g.cs
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\ProjectMembersWindow.baml
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\UserInformationWindow.g.cs
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\UserInformationWindow.baml
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\AddUserToProjectWindow.g.cs
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\AddUserToProjectWindow.baml

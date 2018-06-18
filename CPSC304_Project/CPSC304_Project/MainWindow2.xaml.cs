@@ -20,11 +20,22 @@ namespace CPSC304_Project
     public partial class MainWindow2 : Window
     {
         private List<Project> projects = new List<Project> ();
+        public Project activeProject = null;
+        public User activeUser = null;
 
-        public MainWindow2( string username )
+        public MainWindow2( User activeUser )
         {
+            this.activeUser = activeUser;
+            int activeUserId = activeUser.getUserId ();
             InitializeComponent ();
+            string username = DatabaseHandler.getInstance ().getUsername ( activeUserId );
             CurrentUserLabel.Content = username;
+
+            projects = DatabaseHandler.getInstance ().getUsersProjects ( activeUserId );
+            foreach ( Project project in projects )
+            {
+                ProjectListComboBox.Items.Add ( new ComboBoxItem () { Content = project.getName (), Tag = project.getProjectId () } );
+            }
         }
 
         private void CloseButton_Click( object sender, RoutedEventArgs e )
@@ -47,17 +58,52 @@ namespace CPSC304_Project
             }
         }
 
+        internal void AddNewList( ProjectList newProjectList )
+        {
+            activeProject.AddProjectList ( newProjectList );
+        }
+
+        internal void AddProject( Project newProject )
+        {
+            projects.Add ( newProject );
+            DatabaseHandler.getInstance ().addNewProject ( newProject );
+            DatabaseHandler.getInstance ().addUserToProject ( activeUser, newProject );
+
+            ProjectListComboBox.Items.Add ( new ComboBoxItem () { Content = newProject.getName (), Tag = newProject.getProjectId () } );
+            ProjectListComboBox.Items.Remove ( AddNewProjectComboBoxItem );
+            ProjectListComboBox.Items.Add ( AddNewProjectComboBoxItem );
+
+            ProjectListComboBox.SelectedIndex = ProjectListComboBox.Items.Count - 2;
+        }
+
         private void ProjectListComboBox_SelectionChanged( object sender, SelectionChangedEventArgs e )
         {
             ComboBoxItem selectedItem = ProjectListComboBox.SelectedItem as ComboBoxItem;
-            string projectName = selectedItem.Content as string;
-            RefreshProjectUI ( projectName );
+            if ( selectedItem != null )
+            {
+                if ( selectedItem == AddNewProjectComboBoxItem )
+                {
+                    CreateNewProject ();
+                }
+                else
+                {
+                    projects = DatabaseHandler.getInstance ().getUsersProjects ( activeUser.id );
+                    int projectId = Convert.ToInt32 ( ( selectedItem as ComboBoxItem ).Tag );
+                    RefreshProjectUI ( projectId );
+                }
+
+            }
         }
 
-        private void RefreshProjectUI( string projectName )
+        private void CreateNewProject()
         {
-            // <Button Name="AddNewListButton" Content="+" FontSize="24" Width="36" Height="36" VerticalAlignment="Top" Margin="10,10,0,0" Click="AddNewListButton_Click"/>
+            NewProjectWindow newProjectWindow = new NewProjectWindow ( this );
+            this.IsEnabled = false;
+            newProjectWindow.Show ();
+        }
 
+        private void RefreshProjectUI( int projectId )
+        {
             MainStackPanel.Children.Clear ();
             Button newListButton = new Button ();
             newListButton.Content = "+";
@@ -68,18 +114,44 @@ namespace CPSC304_Project
             newListButton.Margin = new Thickness ( 16, 10, 0, 0 );
             newListButton.Click += AddNewListButton_Click;
             MainStackPanel.Children.Add ( newListButton );
+
+            activeProject = getProjectWithId ( projectId );
+            foreach ( ProjectList projectList in activeProject.getProjectLists () )
+            {
+                GenerateProjectListUI ( projectList );
+            }
+
+        }
+
+        private Project getProjectWithId( int projectId )
+        {
+            foreach ( Project project in projects )
+            {
+                if ( project.getProjectId() == projectId )
+                {
+                    return project;
+                }
+            }
+            return null;
         }
 
         private void ShowProjectMembersButton_Click( object sender, RoutedEventArgs e )
         {
-            // TODO
-            DatabaseHandler.setDatabase ( "HelloWorld" );
-            DatabaseHandler dbHandler = DatabaseHandler.getInstance ();
-            dbHandler.testDb ();
+            // Opens a new window which shows all of the members on the current project
+            if ( ProjectListComboBox.SelectedIndex == -1 )
+            {
+                return;
+            }
+            ProjectMembersWindow projectMembersWindow = new ProjectMembersWindow ( this, activeProject );
+            this.IsEnabled = false;
+            projectMembersWindow.Show ();
         }
 
-        public void AddNewList( string listName, string listPriority )
+        public void GenerateProjectListUI( ProjectList newProjectList )
         {
+            string listName = newProjectList.getName ();
+            string listPriority = newProjectList.getListPriority ();
+
             MainStackPanel.Children.Add ( new Separator () { Width = 20, Visibility = Visibility.Hidden } );
 
             StackPanel newStackPanel = new StackPanel ();
@@ -125,6 +197,7 @@ namespace CPSC304_Project
             addTaskButton.HorizontalAlignment = HorizontalAlignment.Left;
             addTaskButton.Margin = new Thickness ( 10, 0, 0, 0 );
             addTaskButton.Tag = newStackPanel;
+            newStackPanel.Tag = newProjectList.Id;
             newStackPanel.Children.Add ( addTaskButton );
 
             MainStackPanel.Children.Add ( newStackPanel );
@@ -137,6 +210,14 @@ namespace CPSC304_Project
                     addNewButton = child as Button;
                 }
             }
+
+            // Generate tasks UI
+            List<Task> tasks = DatabaseHandler.getInstance ().getTasksOnList ( newProjectList );
+            foreach ( Task task in tasks )
+            {
+                AddNewTaskToList ( task, newStackPanel );
+            }
+
             MainStackPanel.Children.Remove ( addNewButton );
             MainStackPanel.Children.Add ( addNewButton );
         }
@@ -145,10 +226,16 @@ namespace CPSC304_Project
         {
             Button addTaskButton = sender as Button;
             StackPanel parentStackPanel = addTaskButton.Tag as StackPanel;
-
-            NewTaskWindow newTaskWindow = new NewTaskWindow ( parentStackPanel, this );
+            int listId = Convert.ToInt32 ( ( parentStackPanel.Tag ) );
+            int projectId = getActiveProjectId ();
+            NewTaskWindow newTaskWindow = new NewTaskWindow ( parentStackPanel, this, listId, projectId );
             this.IsEnabled = false;
             newTaskWindow.Show ();
+        }
+
+        private int getActiveProjectId()
+        {
+            return Convert.ToInt32 ( ( ProjectListComboBox.SelectedItem as ComboBoxItem ).Tag );
         }
 
         internal void AddNewTaskToList( Task newTask, StackPanel parentStackPanel )
@@ -186,13 +273,38 @@ namespace CPSC304_Project
 
         private void AddNewListButton_Click( object sender, RoutedEventArgs e )
         {
-            NewListWindow newListWindow = new NewListWindow ( this );
+            NewListWindow newListWindow = new NewListWindow ( this, getActiveProjectId () );
             this.IsEnabled = false;
             newListWindow.Show ();
+        }
 
-            //TODO
-            //string listName = "New List";
-            //AddNewList ( listName );
+        private void CurrentUserLabel_MouseEnter( object sender, MouseEventArgs e )
+        {
+            CurrentUserLabel.Background = new SolidColorBrush ( Colors.DarkGray );
+            CurrentUserLabel.Foreground = new SolidColorBrush ( Colors.White );
+            // CurrentUserLabel.FontWeight = FontWeights.Bold;
+        }
+
+        private void CurrentUserLabel_MouseLeave( object sender, MouseEventArgs e )
+        {
+            CurrentUserLabel.Background = new SolidColorBrush ( Colors.Transparent );
+            CurrentUserLabel.Foreground = new SolidColorBrush ( Colors.Black );
+            CurrentUserLabel.FontWeight = FontWeights.Normal;
+
+        }
+
+        private void CurrentUserLabel_PreviewMouseLeftButtonUp( object sender, MouseButtonEventArgs e )
+        {
+            UserInformationWindow userInfoWindow = new UserInformationWindow ( activeUser, this );
+            this.IsEnabled = false;
+            userInfoWindow.Show ();
+        }
+
+        private void ProjectsButton_Click( object sender, RoutedEventArgs e )
+        {
+            AddUserToProjectWindow addUserToProjectWindow = new AddUserToProjectWindow ( this );
+            this.IsEnabled = false;
+            addUserToProjectWindow.Show ();
         }
     }
 }

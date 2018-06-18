@@ -20,10 +20,12 @@ namespace CPSC304_Project
     public partial class NewListWindow : Window
     {
         private MainWindow2 callerWindow;
+        private int projectId;
 
-        public NewListWindow( MainWindow2 caller)
+        public NewListWindow( MainWindow2 caller, int projectId)
         {
             callerWindow = caller;
+            this.projectId = projectId;
             InitializeComponent();
         }
 
@@ -31,7 +33,11 @@ namespace CPSC304_Project
         {
             string listTitle = ListTitleTextBox.Text;
             string listPriority = ( PriorityComboBox.SelectedItem as ComboBoxItem ).Content as string;
-            callerWindow.AddNewList ( listTitle, listPriority );
+            int id = DatabaseHandler.generateNextProjectListId ();
+            ProjectList newProjectList = new ProjectList ( id, projectId, listTitle, listPriority, new List<Task> () );
+            DatabaseHandler.getInstance ().addNewList ( newProjectList );
+            callerWindow.GenerateProjectListUI ( newProjectList );
+            callerWindow.AddNewList ( newProjectList );
 
             this.Close ();
             callerWindow.IsEnabled = true;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CPSC304_Project
 {
-    struct User
+    public class User
     {
         public string username;
         public string password;
@@ -20,6 +20,10 @@ namespace CPSC304_Project
             this.id = id;
             this.isManager = isManager;
         }
-        
+
+        public int getUserId()
+        {
+            return id;
+        }
     }
 }

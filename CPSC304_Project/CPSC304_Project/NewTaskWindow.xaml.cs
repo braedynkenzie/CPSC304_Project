@@ -21,11 +21,15 @@ namespace CPSC304_Project
     {
         StackPanel parentStackPanel;
         MainWindow2 callerWindow;
+        private int listId;
+        private int projectId;
 
-        public NewTaskWindow( StackPanel parent, MainWindow2 mainWindow2 )
+        public NewTaskWindow( StackPanel parent, MainWindow2 mainWindow2, int listId, int projectId )
         {
             parentStackPanel = parent;
             callerWindow = mainWindow2;
+            this.listId = listId;
+            this.projectId = projectId;
             InitializeComponent ();
         }
 
@@ -33,8 +37,10 @@ namespace CPSC304_Project
         {
             string taskName = TaskNameTextBox.Text;
             string taskDescription = TaskDescriptionTextBox.Text;
-            Task newTask = new Task ( taskName, taskDescription );
+            int taskId = DatabaseHandler.generateNextTaskId ();
+            Task newTask = new Task ( taskId, taskName, taskDescription, listId, projectId );
             callerWindow.AddNewTaskToList ( newTask, parentStackPanel );
+            DatabaseHandler.getInstance ().addNewTask ( newTask );
 
             this.Close ();
             callerWindow.IsEnabled = true;

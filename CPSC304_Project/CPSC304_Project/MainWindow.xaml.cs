@@ -51,7 +51,7 @@ namespace CPSC304_Project
             {
                 if ( user.username == username && user.password == password )
                 {
-                    MainWindow2 loggedInWindow = new MainWindow2 ( username );
+                    MainWindow2 loggedInWindow = new MainWindow2 ( user );
                     loggedInWindow.Show ();
                     this.Close ();
                     return;

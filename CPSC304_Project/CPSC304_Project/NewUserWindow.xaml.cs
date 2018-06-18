@@ -31,8 +31,8 @@ namespace CPSC304_Project
             bool   isManager = IsManagerCheckBox.IsChecked == true;
 
             // Add new user to db then login as new user
-            DatabaseHandler.getInstance ().addNewUser ( username, password, isManager );
-            MainWindow2 loggedInWindow = new MainWindow2 ( username );
+            User newUser = DatabaseHandler.getInstance ().addNewUser ( username, password, isManager );
+            MainWindow2 loggedInWindow = new MainWindow2 ( newUser );
             loggedInWindow.Show ();
             this.Close ();
         }
