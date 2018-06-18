@@ -110,7 +110,7 @@ namespace CPSC304_Project
             newProjectWindow.Show ();
         }
 
-        private void RefreshProjectUI( int projectId )
+        public void RefreshProjectUI( int projectId )
         {
             MainStackPanel.Children.Clear ();
             Button newListButton = new Button ();

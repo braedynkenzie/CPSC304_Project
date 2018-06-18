@@ -10,7 +10,10 @@
         <Label Content="User Information" FontWeight="Bold" FontSize="16"/>
         <Label Content="Username:" FontSize="16" Canvas.Top="32"/>
         <TextBlock Name="UsernameTextBlock" Width="194" Canvas.Left="90" Canvas.Top="37" Height="27" FontSize="16" />
-        <Label Content="Task List:" FontSize="16" Canvas.Top="64"/>
+        <Label Content="Task List:" FontSize="16" Canvas.Top="69"/>
         <Button Name="CloseButton" Content="X" Height="22" Width="22" Canvas.Left="250" Canvas.Top="10" Click="CloseButton_Click"/>
+        <ScrollViewer Canvas.Left="75" Canvas.Top="69" Height="215" Width="209">
+            <StackPanel Name="MainStackPanel"/>
+        </ScrollViewer>
     </Canvas>
 </Window>

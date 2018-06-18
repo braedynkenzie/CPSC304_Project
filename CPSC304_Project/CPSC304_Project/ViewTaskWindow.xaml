@@ -19,7 +19,7 @@
         <Label x:Name="AssignedToLabel" Content="" FontSize="16" Canvas.Top="126" Canvas.Left="101" />
 
         <Button Name="ChangeAssignedUserButton" Content="Change Assigned User" Canvas.Left="101" Canvas.Top="163" FontSize="16" Height="30" Width="176" Click="ChangeAssignedUserButton_Click"/>
-        <Button x:Name="DeleteTaskButton" Content="Delete Task" Canvas.Left="101" Canvas.Top="198" FontSize="16" Height="30" Width="176"/>
+        <Button x:Name="DeleteTaskButton" Content="Delete Task" Canvas.Left="101" Canvas.Top="198" FontSize="16" Height="30" Width="176" Click="DeleteTaskButton_Click"/>
 
 
 

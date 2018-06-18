@@ -59,6 +59,36 @@ namespace CPSC304_Project
             return dbHandlerInstance;
         }
 
+        internal List<Task> getAllTasksForUser( User user )
+        {
+            // Return a list of all tasks for given user
+            mySqlConnection.Open ();
+            List<Task> usersTasks = new List<Task> ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                "SELECT id, listId, projectId, taskName, taskDescription, taskDueDate, assignedTo " +
+                "FROM Tasks " +
+                "WHERE assignedTo = {0} ",
+                user.id
+                );
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                int taskId = reader.GetInt32 ( 0 );
+                int listId = reader.GetInt32 ( 1 );
+                int projectId = reader.GetInt32 ( 2 );
+                string taskName = reader.GetString ( 3 );
+                string taskDescription = reader.GetString ( 4 );
+                DateTime taskDueDate = reader.GetDateTime ( 5 );
+                int userId = reader.GetInt32 ( 6 );
+                Task task = new Task ( taskId, taskName, taskDescription, listId, projectId, taskDueDate, userId );
+                usersTasks.Add ( task );
+            }
+            mySqlConnection.Close ();
+            return usersTasks;
+        }
+
         public void addUserToProject( User user, Project project )
         {
             // Makes the connection between user and project by adding to the WorksOn database table
@@ -69,6 +99,20 @@ namespace CPSC304_Project
                     "INSERT INTO WorksOn(userId,projectId)" +
                     "VALUES ({0},{1});",
                     user.getUserId (), project.getProjectId () );
+            cmd.ExecuteNonQuery ();
+
+            mySqlConnection.Close ();
+        }
+
+        internal void removeTask( Task activeTask )
+        {
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                String.Format (
+                    "DELETE FROM Tasks " +
+                    "WHERE id = {0};",
+                    activeTask.Id );
             cmd.ExecuteNonQuery ();
 
             mySqlConnection.Close ();
@@ -523,7 +567,7 @@ namespace CPSC304_Project
                     "assignedTo INT, " +
                     "PRIMARY KEY (id, projectId, listId), " +
                     "FOREIGN KEY (projectId) REFERENCES Projects(id), " +
-                    "FOREIGN KEY (listId) REFERENCES Lists(id), " +
+                    "FOREIGN KEY (listId) REFERENCES Lists(id) ON DELETE CASCADE, " +
                     "FOREIGN KEY (assignedTo) REFERENCES Users(id) " +
                     ");";
                 createTasksTableCmd.ExecuteNonQuery ();

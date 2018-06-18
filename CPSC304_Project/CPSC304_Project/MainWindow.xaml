@@ -33,6 +33,7 @@
         </Grid>
         <Button Name="ProcessLoginAttemptButton" Content="Login" FontSize="16" Margin="273,117,42.2,24" Click="ProcessLoginAttemptButton_Click"/>
         <Button x:Name="CreateNewUserButton" Content="Create New User" FontSize="16" Margin="30,116,192.2,24" Click="CreateNewUserButton_Click" />
+        <Button x:Name="CloseButton" Content="" FontSize="8" Height="26" Width="26" Click="CloseButton_Click" Margin="356,11,10.2,155" />
     </Grid>
 
 </Window>

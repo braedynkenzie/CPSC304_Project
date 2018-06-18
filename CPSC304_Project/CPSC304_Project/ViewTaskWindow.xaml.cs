@@ -62,5 +62,30 @@ namespace CPSC304_Project
             TaskDescriptionTextBox.Text = activeTask.GetDescription () as string;
             AssignedToLabel.Content = DatabaseHandler.getInstance ().getUserFromId ( activeTask.AssignedToUserId ).username;
         }
+
+        private void DeleteTaskButton_Click( object sender, RoutedEventArgs e )
+        {
+            if ( activeUser.isManager )
+            {
+                var result = MessageBox.Show ( "Are you sure you want to delete the selected task?", "Attention", MessageBoxButton.YesNo );
+                switch ( result )
+                {
+                    case MessageBoxResult.Yes:
+                        // Delete the task
+                        DatabaseHandler.getInstance ().removeTask ( activeTask );
+                        this.Close ();
+                        ( callerWindow as MainWindow2 ).RefreshProjectUI ( ( callerWindow as MainWindow2 ).activeProject.getProjectId () );
+                        callerWindow.IsEnabled = true;
+                        break;
+                    case MessageBoxResult.No:
+                        // Do nothing
+                        break;
+                }
+            }
+            else
+            {
+                MessageBox.Show ( "You require manager priviliges in order to perform this action.", "Error" );
+            }
+        }
     }
 }
