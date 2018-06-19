@@ -774,6 +774,26 @@ namespace CPSC304_Project
             return maxAverageTasksPerListOutOfAllProjects;
         }
 
+        public List<string> getListOfAllTaskPriorities()
+        {
+            List<string> allTaskPriorities = new List<string> ();
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                    "SELECT * " +
+                    "FROM Tasks, Lists " +
+                    "WHERE Tasks.listId = Lists.id ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                string taskPriority = reader.GetString ( 11 );
+                allTaskPriorities.Add ( taskPriority );
+            }
+            mySqlConnection.Close ();
+            return allTaskPriorities;
+
+        }
+
 
 
 
