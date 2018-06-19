@@ -20,7 +20,7 @@ namespace CPSC304_Project
     /// </summary>
     public partial class MainWindow : Window
     {
-        public static string DATABASE_NAME = "HelloWorld";
+        public static string DATABASE_NAME = "CPSC304DATABASE";
 
         public MainWindow()
         {

@@ -544,8 +544,8 @@ namespace CPSC304_Project
                     "CREATE TABLE IF NOT EXISTS Users (" +
                     "id INT PRIMARY KEY, " +
                     "isManager INT," +
-                    "username CHAR(20), " +
-                    "password CHAR(20) " +
+                    "username CHAR(200), " +
+                    "password CHAR(200) " +
                     ");";
                 createUsersTableCmd.ExecuteNonQuery ();
 
@@ -553,7 +553,7 @@ namespace CPSC304_Project
                 createProjectsTableCmd.CommandText =
                     "CREATE TABLE IF NOT EXISTS Projects (" +
                     "id INT PRIMARY KEY, " +
-                    "title CHAR(20) " +
+                    "title CHAR(200) " +
                     ");";
                 createProjectsTableCmd.ExecuteNonQuery ();
 
@@ -562,8 +562,8 @@ namespace CPSC304_Project
                     "CREATE TABLE IF NOT EXISTS Lists (" +
                     "id INT, " +
                     "projectId INT, " +
-                    "title CHAR(20), " +
-                    "priority CHAR(20), " +
+                    "title CHAR(200), " +
+                    "priority CHAR(200), " +
                     "PRIMARY KEY (id, projectId), " +
                     "FOREIGN KEY (projectId) REFERENCES Projects(id) " +
                     ");";
@@ -575,7 +575,7 @@ namespace CPSC304_Project
                     "id INT, " +
                     "projectId INT, " +
                     "listId INT, " +
-                    "taskName CHAR(20), " +
+                    "taskName CHAR(200), " +
                     "taskDescription CHAR(200)," +
                     "taskDueDate DATETIME, " +
                     "assignedTo INT, " +
@@ -793,11 +793,7 @@ namespace CPSC304_Project
             return allTaskPriorities;
 
         }
-
-
-
-
-
+        
         public void closeConnection()
         {
             try
