@@ -713,6 +713,68 @@ namespace CPSC304_Project
         }
 
 
+        // Complex queries section
+
+        internal int getMaxNumTasksAssignedToSingleUser()
+        {
+            int maxNumTasksAssignedToUser = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                    "SELECT MAX(subQuery.count) " +
+                    "FROM (SELECT COUNT(*) as count " +
+                          "FROM Tasks " +
+                          "GROUP BY assignedTo) as subQuery ";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read() )
+            {
+                maxNumTasksAssignedToUser = reader.GetInt32 ( 0 );
+            }
+            mySqlConnection.Close ();
+            return maxNumTasksAssignedToUser;
+        }
+
+        internal float getMinAverageTasksPerListOutOfAllProjects()
+        {
+            float minAverageTasksPerListOutOfAllProjects = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                    "SELECT MIN(subQuery.averageTasksOnList) " +
+                    "FROM (SELECT AVG(subSubQuery.numTasksOnList) as averageTasksOnList " +
+                          "FROM (SELECT COUNT(*) as numTasksOnList, projectId " +
+                                "FROM Tasks GROUP BY listId, projectId) as subSubQuery " +
+                          "GROUP BY projectId) as subQuery";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                minAverageTasksPerListOutOfAllProjects = reader.GetFloat ( 0 );
+            }
+            mySqlConnection.Close ();
+            return minAverageTasksPerListOutOfAllProjects;
+        }
+
+        internal float getMaxAverageTasksPerListOutOfAllProjects()
+        {
+            float maxAverageTasksPerListOutOfAllProjects = 0;
+            mySqlConnection.Open ();
+            MySqlCommand cmd = mySqlConnection.CreateCommand ();
+            cmd.CommandText =
+                    "SELECT MAX(subQuery.averageTasksOnList) " +
+                    "FROM (SELECT AVG(subSubQuery.numTasksOnList) as averageTasksOnList " +
+                          "FROM (SELECT COUNT(*) as numTasksOnList, projectId " +
+                                "FROM Tasks GROUP BY listId, projectId) as subSubQuery " +
+                          "GROUP BY projectId) as subQuery";
+            MySqlDataReader reader = cmd.ExecuteReader ();
+            while ( reader.Read () )
+            {
+                maxAverageTasksPerListOutOfAllProjects = reader.GetFloat ( 0 );
+            }
+            mySqlConnection.Close ();
+            return maxAverageTasksPerListOutOfAllProjects;
+        }
+
+
 
 
 

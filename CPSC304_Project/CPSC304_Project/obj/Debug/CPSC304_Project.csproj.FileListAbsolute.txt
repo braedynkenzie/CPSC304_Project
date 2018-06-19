@@ -35,3 +35,5 @@ C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CP
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\SelectUserWindow.baml
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\ViewTaskWindow.g.cs
 C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\ViewTaskWindow.baml
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\AdvancedQueriesWindow.g.cs
+C:\Users\Braedyn Kenzie\documents\visual studio 2017\Projects\CPSC304_Project\CPSC304_Project\obj\Debug\AdvancedQueriesWindow.baml

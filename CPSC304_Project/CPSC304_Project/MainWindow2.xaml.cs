@@ -384,5 +384,12 @@ namespace CPSC304_Project
             this.IsEnabled = false;
             addUserToProjectWindow.Show ();
         }
+
+        private void QueriesButton_Click( object sender, RoutedEventArgs e )
+        {
+            AdvancedQueriesWindow advancedQueriesWindow = new AdvancedQueriesWindow ( this );
+            this.IsEnabled = false;
+            advancedQueriesWindow.Show ();
+        }
     }
 }

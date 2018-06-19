@@ -25,5 +25,6 @@
 
         </ScrollViewer>
         <Button x:Name="ProjectsButton" Content="Projects" Canvas.Left="192" Canvas.Top="10" Height="32" Width="64" Click="ProjectsButton_Click" />
+        <Button x:Name="QueriesButton" Content="Queries" Canvas.Left="261" Canvas.Top="10" Height="32" Width="64" Click="QueriesButton_Click"  />
     </Canvas>
 </Window>
